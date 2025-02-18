@@ -204,11 +204,34 @@
 # 1234
 # 12345
 
+# lines = 5
+# stars = 1
+# for i in range(lines):
+#     for j in range(stars):
+#         print(j+1,end="")
+#     print()
+#     stars+=1
+
+
+
+
+
 # 1
 # 2  3
 # 4  5  6
 # 7  8  9  10
 # 11 12 13 14 15
+
+# lines = 5
+# stars = 1
+# num=1
+# for i in range(lines):
+#     for j in range(stars):
+#         print(num,end="")
+#         num+=1
+#     print()
+#     stars+=1
+
 
 # 0
 # 10
@@ -216,14 +239,52 @@
 # 1010
 # 01010
 
+# lines = 5
+# stars = 1
+# for i in range(lines):
+#     for j in range(stars):
+#         print((i+j)%2,end="")
+#     print()
+#     stars+=1
+
 # 0
 # 01
 # 010
 # 0101
 # 01010
 
+# lines = 5
+# stars = 1
+# for i in range(lines):
+#     for j in range(stars):
+#         print(j%2,end="")
+#     print()
+#     stars+=1
+
 # A 
 # BC 
 # DEF 
 # GHIJ 
 # KLMNO
+
+# lines = 5
+# stars = 1
+# k = 'A'
+# for i in range(lines):
+#     for j in range(stars):
+#         print(k,end="")       
+#         c = ord(k)
+#         c+=1
+#         k = chr(c)
+#     print()
+#     stars+=1
+
+lines = 5
+stars = 1
+k = 65
+for i in range(lines):
+    for j in range(stars):
+        print(chr(k),end="")       
+        k+=1
+    print()
+    stars+=1
