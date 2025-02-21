@@ -52,3 +52,46 @@ cars= ["Alto","Centro","Swift","jaz","innova","Fortuner"]
 
 # for i in range(len(cars)):
 #     print(cars[i])
+
+
+# fruits = ["apple", "banana", "cherry", "kiwi", "mango"]
+# newlist = []
+# for i in fruits:
+#     if "a" in i:
+#         newlist.append(i)
+
+
+# newlist = [i for i in fruits if "a" in i]
+# newlist = [i.upper() for i in fruits if i != "apple"]
+# newlist = ["abc" for i in fruits]
+
+# newlist = [x if x != "banana" else "orange" for x in fruits]
+
+# print(newlist)
+
+
+fruits = ["apple", "banana", "kiwi", "mango","cherry"]
+
+# fruits.sort(reverse=True)
+# fruits.reverse()
+# print(fruits)
+
+# k = fruits.copy()
+# k = list(fruits)
+# print(k)
+
+
+l1 = [1,2,3,4,5,2,2]
+l2 = [10,20,30,40,50]
+
+# l3 = l1+l2
+
+# for a in l1:
+#     l2.append(a)
+
+# print(l2)
+
+# print(l1.count(2))
+
+# print(l1.index(5))
+
