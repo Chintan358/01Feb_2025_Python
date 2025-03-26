@@ -1,7 +1,7 @@
 
 class Pen:
 
-    clg="drstc"
+    __clg="drstc"
     # name="tops"
 
     def __init__(self,id,name):
@@ -9,20 +9,20 @@ class Pen:
        self.name = name
 
     def display(self):
-        print("dispay calling",self.id,self.name,self.clg)
+        print("dispay calling",self.id,self.name,self.__clg)
     
     def test(self):
         print("test calling")
 
     @classmethod
     def show(self):
-        print("show calling",self.clg)
+        print("show calling",self.__clg)
     
     @staticmethod
     def run():
         print("run calling...")
 
-Pen.clg="abc"
+Pen.__clg="abc"
 
 p = Pen(10,"Akash")
 p.display()
