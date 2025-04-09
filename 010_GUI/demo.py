@@ -1,5 +1,5 @@
 from tkinter import *
-
+import mysql.connector
 
 root = Tk()
 root.geometry("500x500")
@@ -24,6 +24,30 @@ root.geometry("500x500")
 # Button(text="submit").grid(row=4,column=2)
 
 
+def adddata():
+    name = e1.get()
+    email = e2.get()
+    password = e3.get()
+
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        port=3306,
+        database="1feb_python"
+    )
+    cursor = mydb.cursor()
+
+    # cursor.execute(f"insert into student values(0,'{name}','{email}','{password}')")
+    qry = "insert into student values(%s,%s,%s,%s)"
+    val = (0,name,email,password)
+    cursor.execute(qry,val)
+    mydb.commit()
+
+    e1.delete(0,END)
+    e2.delete(0,END)
+    e3.delete(0,END)
+
 
 l1 = Label(text="Username").place(x=100,y=100)
 l2 = Label(text="Email").place(x=100,y=150)
@@ -36,7 +60,7 @@ e2.place(x=200,y=150)
 e3 = Entry()
 e3.place(x=200,y=200)
 
-Button(text="submit",width=15).place(x=200,y=250)
+Button(text="submit",command=adddata,width=15).place(x=200,y=250)
 
 root.mainloop()
 
