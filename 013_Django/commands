@@ -24,3 +24,6 @@ py manage.py migrate
 
 SHELL : 
 py manage.py shell
+
+CREATE ADMIN
+py manage.py createsuperuser

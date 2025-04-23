@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{%extends 'base.html'%}
+{%load static%}
+{% comment %} {%block 'title'%}
+{{title}}
+{%endblock%} {% endcomment %}
 
-<a href="{%url 'index'%}">Home</a> | 
-<a href="{%url 'about'%}">About</a> |
-<a href="{%url 'contact'%}">Contact</a>
+{%block 'body'%}
+<h1>Index</h1>
 
-    <h1>WELCOME, HOME</h1>
-</body>
-</html>
+<!-- <img src="static/img/deals-1.jpg" alt=""> -->
+<img src="{%static 'img/deals-1.jpg'%}" alt="xcc">
+
+{%endblock%}
