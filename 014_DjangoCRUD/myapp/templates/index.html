@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+            {{msg}}
+            <form action="{%url 'register'%}" method="post">
+                {%csrf_token%}
+                <label for="uname">Username</label>
+                <input type="text" name="uname" id="uname">
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email">
+                <label for="phone">Phone</label>
+                <input type="text" name="phone" id="phone">
+                <label for="age">Age</label>
+                <input type="text" name="age" id="age">
+                <input type="submit">
+            </form>
+</body>
+</html>
