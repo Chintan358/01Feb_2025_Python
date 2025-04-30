@@ -6,3 +6,5 @@ class Student(models.Model):
     email = models.CharField(max_length=50)
     phone = models.CharField(max_length=15)
     age = models.IntegerField()
+    image = models.ImageField(upload_to="studentprofile",null=True)
+    
