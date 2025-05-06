@@ -48,3 +48,4 @@ def update(request):
     student = Student.objects.get(pk=stid)
     allStudents  = Student.objects.all()
     return render(request,"index.html",{"student":student,"students":allStudents})
+
