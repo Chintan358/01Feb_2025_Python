@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function(){
+            $("#upbtn").hide()
             loadData()
         })
 
@@ -18,9 +19,31 @@
             $.get("loaddata",{},function(rt){
                 var rows = ""
                 rt.data.map(ele=>{
-                   rows+="<tr><td>"+ele.id+"</td><td>"+ele.username+"</td><td>"+ele.email+"</td><td>"+ele.age+"</td></tr>"
+                   rows+="<tr><td>"+ele.id+"</td><td>"+ele.username+"</td><td>"+ele.email+"</td><td>"+ele.age+"</td><td><button onclick='deletedata("+ele.id+")' class='btn btn-danger'>Delete</button></td><td><button onclick='editdata("+ele.id+")' class='btn btn-primary'>Update</button></td></tr>"
                 })
                 $("#tdata").html(rows)
+            })
+        }
+
+        const deletedata = (sid)=>
+        {
+            $.get("deletedata",{sid},function(rt){
+                alert(rt)
+                loadData()
+            })
+        }
+
+        const editdata = (sid)=>{
+            $.get("databyid",{sid},function(rt){
+               
+                $("#id").val(rt.data[0].id)
+                $("#uname").val(rt.data[0].username)
+                $("#email").val(rt.data[0].email)
+                $("#age").val(rt.data[0].age)
+
+                $("#upbtn").show()
+                $("#smbtn").hide()
+
             })
         }
 
@@ -41,6 +64,44 @@
 
         }
 
+        const updatedata = ()=>{
+            var id = $("#id").val()
+            var uname = $("#uname").val()
+            var email = $("#email").val()
+            var age = $("#age").val()
+            var csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value
+           
+
+            $.post("updatedata",{csrfmiddlewaretoken,id,uname,email,age},function(rt){
+                alert(rt)
+                $("#id").val("")
+                $("#uname").val("")
+                $("#email").val("")
+                $("#age").val("")
+                loadData()
+                $("#upbtn").hide()
+                $("#smbtn").show()
+
+            })
+
+
+        
+        }
+
+
+
+        const searchdata = (value)=>{
+
+
+            $.get("searchdata",{value},function(rt){
+                var rows = ""
+                rt.data.map(ele=>{
+                   rows+="<tr><td>"+ele.id+"</td><td>"+ele.username+"</td><td>"+ele.email+"</td><td>"+ele.age+"</td><td><button onclick='deletedata("+ele.id+")' class='btn btn-danger'>Delete</button></td><td><button onclick='editdata("+ele.id+")' class='btn btn-primary'>Update</button></td></tr>"
+                })
+                $("#tdata").html(rows)
+            })
+
+        }
     </script>
 
 
@@ -53,6 +114,7 @@
             <h2>Student Registration</h2>
             <hr>
             {%csrf_token%}
+            <input type="hidden" id="id">
             <div class="form-group">
                 <label for="uname">Username</label>
                 <input type="text" name="uname" id="uname" class="form-control">
@@ -66,11 +128,14 @@
                 <input type="text" name="age" id="age" class="form-control">
             </div>
             <br>
-           <button class="btn btn-success" onclick="adddata()">Submit</button>
+           <button class="btn btn-success" id="smbtn" onclick="adddata()">Submit</button>
+           <button class="btn btn-success" id="upbtn" onclick="updatedata()">Update</button>
         </div>
         <div class="col-1"></div>
         <div class="col-6 card p-3 mt-3">
             <h2>Student Details</h2>
+            <hr>
+            <input type="text" id="serach" class="form-control" placeholder="Search...." onkeyup="searchdata(value)">
             <hr>
             <table class="table">
                 <thead>
@@ -79,6 +144,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Age</th>
+                    <th colspan="2">Action</th>
                 </tr>
             </thead>
             <tbody id="tdata">

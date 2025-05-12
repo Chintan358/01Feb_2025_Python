@@ -13,16 +13,19 @@ def register(request):
         email = request.POST['email']
         phone = request.POST['phone']
         age = request.POST['age']
-        image = request.FILES['img']
+        image = ""
+        if request.FILES : 
+            image = request.FILES['img']
 
         if(id):
-            stud = Student.objects.get(pk=id)
-            os.remove(stud.image.path)
+            stud = Student.objects.get(pk=id)     
             stud.username=username
             stud.email = email
             stud.phone=phone
             stud.age=age
-            stud.image=image
+            if image : 
+                os.remove(stud.image.path)
+                stud.image=image
             stud.save()
         else :
             Student.objects.create(username=username,email=email,phone=phone,age=age,image=image)
