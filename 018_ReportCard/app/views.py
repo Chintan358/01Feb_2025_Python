@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from app.models import *
 from django.core.paginator import Paginator
+from django.db.models import Sum
+
 
 # Create your views here.
 def index(request):
@@ -9,3 +11,22 @@ def index(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     return render(request,"index.html",{"students":page_obj})
+
+def marksheet(request):
+    id = int(request.GET['id'])
+    allstudents =  Marks.objects.filter(student_id=id)
+   
+    sum =  allstudents.aggregate(total = Sum("marks"))
+
+    # for st in allstudents:
+    #     sum+=st.marks
+    
+    rankstduents = Student.objects.annotate(total=Sum("marks__marks")).order_by("-total")
+    count = 0
+    for ranks in rankstduents:
+        count+=1
+        if ranks.id==id : 
+            break;
+            
+
+    return render(request,"marksheet.html",{"students":allstudents,"sum":sum,"count":count})

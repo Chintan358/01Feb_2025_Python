@@ -28,7 +28,7 @@
         {%for std in students%}
         <tr>
             <td>{{forloop.counter}}</td>
-            <td><a href="" class="btn btn-primary">{{std.stid.stid}}</a></td>
+            <td><a href="{%url 'marksheet'%}?id={{std.id}}" class="btn btn-primary">{{std.stid.stid}}</a></td>
             <td>{{std.name}}</td>
             <td>{{std.email}}</td>
             <td>{{std.age}}</td>
