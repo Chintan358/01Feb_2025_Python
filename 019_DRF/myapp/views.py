@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,APIView
 from myapp.models import *
 from myapp.serializer import *
 
@@ -48,3 +48,88 @@ def delete(request,id):
     except Exception as e:
          return Response({"error":e,"message":"something went wrong"})
     
+
+@api_view(["GET"])
+def getemp(request):
+    try:
+        allemp = Emp.objects.all()
+        ser = EmpSerializer(allemp,many=True)
+        return Response({"data":ser.data})
+    except Exception as e:
+        return Response({"message":"Something went wrong"})
+
+@api_view(["POST"])
+def addemp(request):
+    try : 
+        ser = EmpSerializer(data=request.data)
+        if not ser.is_valid():
+            return Response({"Errors":ser.errors,"message":"Something went wrong"})
+        ser.save()
+        return Response({"Inserted data":ser.data})
+    except Exception as e:
+         return Response({"message":"Something went wrong"})
+
+@api_view(["PUT"])
+def updateemp(request,id):
+    try : 
+        empdata = Emp.objects.get(pk=id)
+        ser = EmpSerializer(empdata,request.data)
+        if not ser.is_valid():
+            return Response({"Errors":ser.errors,"message":"Something went wrong"})
+        ser.save()
+        return Response({"updated data":ser.data})
+    except Exception as e:
+         return Response({"message":"Something went wrong"})
+
+@api_view(["DELETE"])
+def deleteemp(request,id):
+    try : 
+        empdata = Emp.objects.get(pk=id)
+        empdata.delete()
+        return Response({"success":True})
+    except Exception as e:
+         return Response({"message":"Something went wrong"})
+    
+
+
+class ProductAPI(APIView):
+    def get(self,request):
+        try:
+            allproducts = Product.objects.all()
+            ser = ProductSerializer(allproducts,many=True)
+            return Response({"data":ser.data})
+        except Exception as e:
+            return Response({"message":"Something went wrong"})
+
+    def post(self,request):
+        try:
+            ser = ProductSerializer(data=request.data)
+            if not ser.is_valid():
+                return Response({"Errors":ser.errors,"message":"Something went wrong"})
+            ser.save()
+            return Response({"Inserted data":ser.data})
+        except Exception as e:
+            return Response({"message":"Something went wrong"})
+        
+    def put(self,request):
+        try:
+            product = Product.objects.get(pk=request.data.get('id'))
+            if not product:
+                return Response({"message":"Product not found"})    
+            ser = ProductSerializer(product,request.data)
+            if not ser.is_valid():
+                return Response({"Errors":ser.errors,"message":"Something went wrong"})
+            ser.save()
+            return Response({"Updated data":ser.data})
+        except Exception as e:
+            return Response({"message":"Something went wrong"})
+        
+    def delete(self,request):
+        try:
+            product = Product.objects.get(pk=request.data.get('id'))
+            if not product:
+                return Response({"message":"Product not found"})
+            product.delete()
+            return Response({"success":True})
+        except Exception as e:
+            return Response({"message":"Something went wrong"})
