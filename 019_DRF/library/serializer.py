@@ -23,6 +23,7 @@ class BookSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['qty'] < 0:
             raise serializers.ValidationError("Quantity cannot be negtive.")
+        return attrs
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

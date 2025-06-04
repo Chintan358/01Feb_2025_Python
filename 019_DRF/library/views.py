@@ -4,7 +4,9 @@ from library.serializer import *
 from rest_framework.decorators import api_view,APIView
 from rest_framework.response import Response
 # Create your views here.
-
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class AuthorAPI(APIView):
@@ -109,6 +111,9 @@ class PublicationAPIById(APIView):
 
 @api_view(['GET'])
 def bookList(request):
+
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     try:
         allBooks = Book.objects.all()
         ser = BookSerializer(allBooks,many=True)
@@ -119,6 +124,9 @@ def bookList(request):
     
 @api_view(['POST'])
 def bookCreate(request,aid,pid):
+
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     try:
         author = Author.objects.get(pk=aid)
         publication = Publication.objects.get(pk=pid)
@@ -154,6 +162,10 @@ def bookUpdate(request,aid,pid,id):
         return Response({"message":"Something went wrong !!!"})
     
 class BookAPIById(APIView):
+
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, id):
         try:
@@ -190,3 +202,5 @@ def bookByPublication(request,pid):
         return Response({"data":ser.data})
     except Exception as e:
         return Response({"message":"Something went wrong !!!"})
+    
+
