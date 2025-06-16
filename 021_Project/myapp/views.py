@@ -186,3 +186,55 @@ class UserRegistrationAPIView(APIView):
             user = serializer.save()
             return Response({'message': 'User registered successfully', 'user_id': user.id}, status=201)
         return Response(serializer.errors, status=400)
+    
+
+class CartAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+   
+    def get_permissions(self):
+        """
+        Set permissions for the view.
+        """
+        if self.request.method in ['POST', 'PUT', 'DELETE','GET']:
+            return [IsAuthenticated()]
+        
+
+    """
+    API view for handling cart-related operations.
+    """
+    def post(self, request):
+        """
+        Handle POST requests to add a product to the cart.
+        """
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        # Ensure product with the given ID exists
+        product_id = request.data.get('product')
+        isExist = Cart.objects.filter(product_id=product_id,user_id=user.id).exists()
+        if isExist:
+            return Response({'error': 'Product already exists in cart'}, status=400)
+        request.data['user'] = user.id
+        serializer = CartSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    
+    def get(self, request):
+        """
+        Handle GET requests to retrieve the user's cart.
+        """
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        try:
+            
+            cart_items = Cart.objects.filter(user=user)
+            serializer = CartSerializer(cart_items, many=True)
+            return Response(serializer.data)
+            return Response(serializer.data)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=404)

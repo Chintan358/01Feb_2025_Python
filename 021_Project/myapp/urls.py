@@ -25,6 +25,13 @@ urlpatterns = [
 
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Cart-related URLs
+    
+    path('cart/', CartAPIView.as_view(), name='cart-list'),
+    
+   
+
 ]
 
 
