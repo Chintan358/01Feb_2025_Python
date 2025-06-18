@@ -238,3 +238,57 @@ class CartAPIView(APIView):
             return Response(serializer.data)
         except Cart.DoesNotExist:
             return Response({'error': 'Cart item not found'}, status=404)
+        
+    def delete(self, request, pk):
+        """
+        Handle DELETE requests to remove a product from the cart.
+        """
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        try:
+            cart_item = Cart.objects.get(pk=pk, user=user)
+            cart_item.delete()
+            return Response({'message': 'Cart item deleted successfully'}, status=204)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=404)
+        
+
+class ChangeQtyAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+   
+    def get_permissions(self):
+        """
+        Set permissions for the view.
+        """
+        if self.request.method in ['PUT']:
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    """
+    API view for changing the quantity of a product in the cart.
+    """
+    def put(self, request, pk):
+        """
+        Handle PUT requests to change the quantity of a cart item.
+        """
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        try:
+            cart_item = Cart.objects.get(pk=pk, user=user)
+
+            request.data['quantity'] = cart_item.quantity+ request.data['quantity']   # Default to current quantity if not provided
+            if request.data['quantity'] < 1:
+                cart_item.delete()
+                return Response({'error': 'Quantity must be at least 1'}, status=400)
+           
+            serializer = CartSerializer(cart_item, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=400)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=404)

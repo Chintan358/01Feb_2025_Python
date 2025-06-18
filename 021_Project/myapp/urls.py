@@ -29,7 +29,10 @@ urlpatterns = [
     # Cart-related URLs
     
     path('cart/', CartAPIView.as_view(), name='cart-list'),
-    
+    path('cart/<int:pk>/', CartAPIView.as_view(), name='cart-detail'),
+
+    #change qty in cart
+    path('cart/change-qty/<int:pk>/', ChangeQtyAPIView.as_view(), name='change-qty'),
    
 
 ]
