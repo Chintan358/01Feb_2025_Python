@@ -35,6 +35,16 @@ urlpatterns = [
     path('cart/change-qty/<int:pk>/', ChangeQtyAPIView.as_view(), name='change-qty'),
    
 
+    path("payment",payment,name="payment"),
+
+    path('orders/', OrderAPIView.as_view(), name='order-list'),
+
+   
+   
+    # path('orders/<int:pk>/', OrderAPIView.as_view(), name='order-detail'),
+
+
+
 ]
 
 

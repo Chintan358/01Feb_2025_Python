@@ -6,6 +6,8 @@ from myapp.serializer import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
+import razorpay
+from django.http import JsonResponse
 
 
 class IsStaffUser(BasePermission):
@@ -292,3 +294,81 @@ class ChangeQtyAPIView(APIView):
             return Response(serializer.errors, status=400)
         except Cart.DoesNotExist:
             return Response({'error': 'Cart item not found'}, status=404)
+        
+
+def payment(request):
+
+
+
+    authentication_classes = [JWTAuthentication]
+
+
+    # Initialize Razorpay client with your API key and secret
+    amount = int(request.GET.get('amount') ) # Default amount is 500 if not provided
+    client = razorpay.Client(auth=("rzp_test_oox9ZKsz6Uu09W", "1umN06wc9ZHC2blBvuR41bN9"))
+    data = { "amount": amount*100, "currency": "INR", "receipt": "order_rcptid_11" }
+    payment = client.order.create(data=data) # Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    return JsonResponse(payment, safe=False)
+
+
+class OrderAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    
+    """
+    API view for handling order-related operations.
+    """
+    def post(self, request):
+        
+        #create order from current cart cart items and current user
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        cart_items = Cart.objects.filter(user=user)
+        if not cart_items.exists():
+            return Response({'error': 'Cart is empty'}, status=400)
+        
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+
+
+        request.data['user'] = user.id
+        request.data['total_price'] = total_price
+
+
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            # Create OrderItems for each cart item
+            order = serializer.instance
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+            # Clear the cart after order creation
+            cart_items.delete()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    
+
+    def get(self, request):
+        """
+        Handle GET requests to retrieve all orders for the authenticated user.
+        """
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        orders = Order.objects.filter(user=user).prefetch_related("items")
+
+        if not orders.exists():
+            return Response({'message': 'No orders found'}, status=404)
+
+        # order with orderitems
+
+        serializer = OrderSerializer(orders , many=True)
+        return Response(serializer.data)
+  

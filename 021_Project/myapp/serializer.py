@@ -66,3 +66,36 @@ class CartSerializer(serializers.ModelSerializer):
         representation['product'] = ProductSerializer(instance.product).data
         
         return representation
+
+class OrderSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Order model.
+    """
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'total_price', 'created_at']
+
+    def to_representation(self, instance):
+        """
+        Customize the representation of the Order model to include product details.
+        """
+        representation = super().to_representation(instance)
+        representation['user'] = UserRegistrationSerializer(instance.user).data
+        return representation
+    
+class OrderItemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the OrderItem model.
+    """
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        """
+        Customize the representation of the OrderItem model to include product details.
+        """
+        representation = super().to_representation(instance)
+        representation['product'] = ProductSerializer(instance.product).data
+        representation['order'] = OrderSerializer(instance.order).data
+        return representation
