@@ -16,12 +16,18 @@ urlpatterns = [
     path("login-register",login_register,name="login-register"),
     path("shop",shop,name="shop"),
 
+    path("register-user", register_user, name="register-user"),
+    path("login-user", login_user, name="login-user"),
+    path("logout-user", logout_user, name="logout-user"),
+
+    path("categories", categories, name="categories"),
+    path("products", products, name="products"),
    
 
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  
     
 
 
