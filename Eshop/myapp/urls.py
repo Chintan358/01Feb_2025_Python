@@ -22,6 +22,10 @@ urlpatterns = [
 
     path("categories", categories, name="categories"),
     path("products", products, name="products"),
+
+    path("addtocart",addtocart,name="addtocart"),
+    path("deletecart",deletecart,name="deletecart"),
+    path("changeqty",changeqty,name="changeqty")
    
 
 ]

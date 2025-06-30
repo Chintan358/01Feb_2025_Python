@@ -35,6 +35,9 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def total_price(self):
+        return self.product.price*self.quantity
+
    
     
 class Order(models.Model):
