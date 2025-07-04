@@ -25,7 +25,11 @@ urlpatterns = [
 
     path("addtocart",addtocart,name="addtocart"),
     path("deletecart",deletecart,name="deletecart"),
-    path("changeqty",changeqty,name="changeqty")
+    path("changeqty",changeqty,name="changeqty"),
+
+    path('payment', payment, name='payment'),
+
+    path('order', order, name='order'),
    
 
 ]

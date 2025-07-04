@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from myapp.models import *
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+import razorpay
+from django.core.mail import send_mail
+from django.conf import settings
 # Create your views here.
 def home(request):
     """
@@ -16,7 +19,11 @@ def accounts(request):
     """
     Render the accounts page.
     """
-    return render(request, "accounts.html")
+    if request.user.is_authenticated:
+        user = request.user
+        orders = Order.objects.filter(user=user)
+
+    return render(request, "accounts.html",{"orders":orders})
 
 @login_required(login_url="login-register")
 def cart(request):
@@ -164,3 +171,50 @@ def changeqty(request):
     cart.quantity=qty
     cart.save()
     return HttpResponse("Qty changed...")
+
+
+def payment(request):
+
+    # Initialize Razorpay client with your API key and secret
+    amount = float(request.GET.get('amount') ) # Default amount is 500 if not provided
+    client = razorpay.Client(auth=("rzp_test_oox9ZKsz6Uu09W", "1umN06wc9ZHC2blBvuR41bN9"))
+    data = { "amount": amount*100, "currency": "INR", "receipt": "order_rcptid_11" }
+    payment = client.order.create(data=data) # Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+   
+    return JsonResponse(payment)  # This will return the payment order details as a response
+
+
+def order(request):
+    user = request.user
+    cart_items = Cart.objects.filter(user=user)
+    
+    if not cart_items:
+        return HttpResponse("Your cart is empty.")
+
+    total_price = sum(item.total_price() for item in cart_items)
+    
+    order = Order.objects.create(user=user, total_price=total_price)
+    
+    msg="<table border='1'>"
+    msg+="<tr><th>Product</th><th>Quantity</th><th>Price</th></tr>"
+    for item in cart_items:
+        msg += f"<tr><td>{item.product.name}</td><td>{item.quantity}</td><td>{item.total_price()}</td></tr>"
+    
+    msg += f"<tr><td colspan='2'>Total Price</td><td>{total_price}</td></tr></table>"
+
+    for item in cart_items:
+        OrderItem.objects.create(order=order, product=item.product, quantity=item.quantity, price=item.product.price)
+        item.delete()  # Remove the item from the cart after creating the order
+
+
+    send_mail(
+    subject='Order Confirmation',
+    message='Order placed successfully',  # Plain text version
+    from_email=settings.EMAIL_HOST_USER,
+    recipient_list=['chintan.tops@gmail.com'],
+    html_message=msg,  # HTML version
+    fail_silently=False,
+)
+
+
+    return HttpResponse(f"Order placed successfully! Total price: {total_price}")
